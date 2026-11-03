@@ -24,7 +24,7 @@ A small online shop page built with TypeScript and Vite. Users can browse produc
 Requirements: Node.js (LTS) and Git.
 
 ```bash
-git clone https://github.com/Abdallaheng2022/shopboard.git
+git clone https://github.com/Abdallaheng2022/shopboard-ts.git
 cd shopboard
 npm install
 npm run dev
