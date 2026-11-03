@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="ShopBoard: everything your shop needs, in one board." />
+    <title>ShopBoard</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="logo" href="/">ShopBoard</a>
+      <nav aria-label="Main">
+        <ul class="nav-list">
+          <li><a href="#products">Shop</a></li>
+          <li><a href="#cart">Cart</a></li>
+          <li>
+            <button id="open-register" type="button" class="nav-button">Sign up</button>
+          </li>
+        </ul>
+      </nav>
+      <p class="cart">Cart: <span id="cart-count" aria-live="polite">0</span></p>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <h1 id="hero-title">Sell smarter.</h1>
+        <p>Everything your shop needs, in one board.</p>
+        <a class="button" href="#products">Shop now</a>
+      </section>
+
+      <section id="products" class="products" aria-labelledby="products-title">
+        <h2 id="products-title">Products</h2>
+        <div class="controls">
+          <div class="field">
+            <label for="search">Search</label>
+            <input id="search" name="search" type="search" placeholder="Product name" />
+          </div>
+          <div class="field">
+            <label for="category">Category</label>
+            <select id="category" name="category">
+              <option value="all">All categories</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="sort">Sort by price</label>
+            <select id="sort" name="sort">
+              <option value="default">Default</option>
+              <option value="price-asc">Low to high</option>
+              <option value="price-desc">High to low</option>
+            </select>
+          </div>
+        </div>
+        <p id="products-status" class="hint" role="status">Loading products…</p>
+        <div id="product-grid" class="grid"></div>
+      </section>
+
+      <section id="cart" class="cart-section" aria-labelledby="cart-title">
+        <h2 id="cart-title">Your cart</h2>
+        <p id="cart-empty" class="hint">Your cart is empty.</p>
+        <ul id="cart-list" class="cart-list"></ul>
+        <div class="cart-summary">
+          <p class="cart-total">Total: <span id="cart-total">$0</span></p>
+          <button id="clear-cart" type="button" class="button-secondary">Clear cart</button>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="register-dialog" class="register-dialog" aria-labelledby="register-title">
+      <div class="register-dialog-content">
+        <div class="register-dialog-header">
+          <h2 id="register-title">Create your account</h2>
+          <button id="close-register" type="button" class="button-secondary" aria-label="Close">
+            ×
+          </button>
+        </div>
+        <form id="register-form" class="form" method="dialog">
+          <div class="field">
+            <label for="name">Full name</label>
+            <input id="name" name="name" type="text" autocomplete="name" required />
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" required />
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="new-password"
+              minlength="8"
+              aria-describedby="password-hint"
+              required
+            />
+            <p id="password-hint" class="hint">At least 8 characters.</p>
+          </div>
+          <div class="field field-check">
+            <input id="terms" name="terms" type="checkbox" required />
+            <label for="terms">I agree to the terms</label>
+          </div>
+          <button type="submit">Create account</button>
+        </form>
+      </div>
+    </dialog>
+
+    <div id="toast-region" class="toast-region" role="status" aria-live="polite"></div>
+
+    <footer class="site-footer">
+      <p>© 2026 ShopBoard</p>
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
