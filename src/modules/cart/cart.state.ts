@@ -24,14 +24,15 @@ function isCartItem(value: unknown): value is CartItem {
   );
 }
 
-// Reads the saved cart. Missing or broken data gives an empty cart instead of an error.
+// Reads the saved cart. Missing, broken or blocked storage gives an empty cart instead of an error.
 function loadCart(): Cart {
-  const saved = localStorage.getItem(CART_STORAGE_KEY);
-  if (saved === null) return [];
   try {
+    const saved = localStorage.getItem(CART_STORAGE_KEY);
+    if (saved === null) return [];
     const data: unknown = JSON.parse(saved);
     return Array.isArray(data) ? data.filter(isCartItem) : [];
-  } catch {
+  } catch (error) {
+    console.warn("Couldn't read the saved cart", error);
     return [];
   }
 }
@@ -39,11 +40,26 @@ function loadCart(): Cart {
 // The current cart. Not exported: other files read it with getCart() and change it with the functions below.
 let cart: Cart = loadCart();
 
+// True when the last save failed, for example when storage is full or blocked.
+let saveFailed = false;
+
 // Replaces the cart and saves it, so it survives a page refresh.
+// If saving fails, the cart still works for this visit; saveFailed tells the UI.
 function setCart(next: Cart): Cart {
   cart = next;
-  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+    saveFailed = false;
+  } catch (error) {
+    console.warn("Couldn't save the cart", error);
+    saveFailed = true;
+  }
   return cart;
+}
+
+// Tells the UI whether the last change could not be saved.
+export function didLastSaveFail(): boolean {
+  return saveFailed;
 }
 
 // Changes one product's quantity by `step`, and drops the line if it falls below the minimum.
@@ -81,6 +97,12 @@ export function decreaseItem(productId: number): Cart {
 // Removes only this product. Every other line stays.
 export function removeItem(productId: number): Cart {
   return setCart(cart.filter((item) => item.productId !== productId));
+}
+
+// Drops saved lines for products the store no longer has, so the count matches what is shown.
+export function removeUnknownItems(knownIds: readonly number[]): Cart {
+  const next = cart.filter((item) => knownIds.includes(item.productId));
+  return next.length === cart.length ? cart : setCart(next);
 }
 
 // Empties the whole cart.

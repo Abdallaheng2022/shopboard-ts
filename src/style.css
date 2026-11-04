@@ -462,6 +462,38 @@ body .cart-drawer-header #cart-title {
   font-variant-numeric: tabular-nums;
 }
 
+/* Product status: loading, empty and error messages.
+   :not([hidden]) matters: display: grid would otherwise beat the hidden attribute and keep it on screen. */
+.products-status:not([hidden]) {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+}
+
+/* Loading placeholders: grey tiles the size of a product card */
+.skeleton-card {
+  min-height: 300px;
+  border-radius: var(--rb-r-lg);
+  background:
+    linear-gradient(90deg, transparent, rgb(255 255 255 / 45%), transparent) 0 0 / 200% 100%
+      no-repeat,
+    var(--rb-surface-2);
+  animation: skeleton-shimmer 1.4s linear infinite;
+}
+
+@keyframes skeleton-shimmer {
+  from {
+    background-position:
+      150% 0,
+      0 0;
+  }
+  to {
+    background-position:
+      -150% 0,
+      0 0;
+  }
+}
+
 /* ==== StyleProof theme layer: Bento Showcase (orig) ====
    Generated 2026-11-04. See DESIGN.md. Delete this block to go back. */
 /* StyleProof theme layer */

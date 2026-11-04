@@ -1,19 +1,54 @@
 // products.ui.ts: draws the products and reads the search, category and sort controls.
 import { getElement } from "../../shared/ui/dom";
 import { formatPrice } from "../../shared/ui/format";
-import { isSortOrder } from "./products.logic";
+import { ALL_CATEGORIES, isSortOrder } from "./products.logic";
 import type { Filters, Product } from "./products.types";
 
 const grid = getElement<HTMLDivElement>("#product-grid");
-const status = getElement<HTMLParagraphElement>("#products-status");
+const status = getElement<HTMLDivElement>("#products-status");
 const searchInput = getElement<HTMLInputElement>("#search");
 const categorySelect = getElement<HTMLSelectElement>("#category");
 const sortSelect = getElement<HTMLSelectElement>("#sort");
 
-// Adds one <option> per category after "All categories".
+// How many placeholder cards show while the products load.
+const SKELETON_COUNT = 6;
+
+// Rebuilds the category list: "All categories" first, then one <option> per category.
 export function renderCategoryOptions(categories: readonly string[]): void {
   const options = categories.map((category) => new Option(category, category));
-  categorySelect.append(...options);
+  categorySelect.replaceChildren(new Option("All categories", ALL_CATEGORIES), ...options);
+}
+
+// Shows a message in the status box, with an optional button under it.
+function showStatus(message: string, action?: HTMLButtonElement): void {
+  const text = document.createElement("p");
+  text.className = "hint";
+  text.textContent = message;
+  status.replaceChildren(text, ...(action === undefined ? [] : [action]));
+  status.hidden = false;
+}
+
+// Turns the search, category and sort controls on or off.
+function setControlsDisabled(disabled: boolean): void {
+  searchInput.disabled = disabled;
+  categorySelect.disabled = disabled;
+  sortSelect.disabled = disabled;
+}
+
+// Builds one grey placeholder card. Screen readers skip it and hear the status message instead.
+function createSkeletonCard(): HTMLDivElement {
+  const card = document.createElement("div");
+  card.className = "skeleton-card";
+  card.setAttribute("aria-hidden", "true");
+  return card;
+}
+
+// Loading state: placeholder cards, a status message, and the controls turned off.
+export function renderProductsLoading(): void {
+  grid.replaceChildren(...Array.from({ length: SKELETON_COUNT }, createSkeletonCard));
+  grid.setAttribute("aria-busy", "true");
+  setControlsDisabled(true);
+  showStatus("Loading products…");
 }
 
 // Builds one product card, the same markup the old hard-coded HTML had.
@@ -47,18 +82,32 @@ function createProductCard(product: Product): HTMLElement {
   return card;
 }
 
-// Replaces the grid with these products, and shows a message when there are none.
-export function renderProducts(list: readonly Product[]): void {
+// Replaces the grid with these products. `totalCount` is how many the store has before filtering,
+// so an empty store and a search with no results get different messages.
+export function renderProducts(list: readonly Product[], totalCount: number): void {
   grid.replaceChildren(...list.map(createProductCard));
-  status.hidden = list.length > 0;
-  status.textContent = "No products match your search.";
+  grid.setAttribute("aria-busy", "false");
+  setControlsDisabled(totalCount === 0);
+  if (totalCount === 0) {
+    showStatus("No products are available right now. Please check back later.");
+  } else if (list.length === 0) {
+    showStatus("No products match your search. Try another name or category.");
+  } else {
+    status.hidden = true;
+  }
 }
 
-// Shows an error in place of the products, for example when the server can't be reached.
-export function renderProductsError(message: string): void {
+// Error state: the message and a "Try again" button that calls onRetry.
+export function renderProductsError(message: string, onRetry: () => void): void {
   grid.replaceChildren();
-  status.hidden = false;
-  status.textContent = message;
+  grid.setAttribute("aria-busy", "false");
+  setControlsDisabled(true);
+  const retryButton = document.createElement("button");
+  retryButton.type = "button";
+  retryButton.className = "button-secondary";
+  retryButton.textContent = "Try again";
+  retryButton.addEventListener("click", onRetry);
+  showStatus(message, retryButton);
 }
 
 // Reads what the user picked in the three controls.

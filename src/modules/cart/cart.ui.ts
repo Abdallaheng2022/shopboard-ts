@@ -67,13 +67,22 @@ function createCartLine(item: CartItem, product: Product): HTMLLIElement {
 }
 
 // Redraws the whole cart: every line, the count in the header, and the total.
+// Before the products load, saved lines can't be drawn yet, so a message says so.
 export function renderCart(cart: Cart, products: readonly Product[]): void {
   const lines = cart.flatMap((item) => {
     const product = findProductById(products, item.productId);
     return product === undefined ? [] : [createCartLine(item, product)];
   });
   list.replaceChildren(...lines);
-  emptyMessage.hidden = cart.length > 0;
+  if (cart.length === 0) {
+    emptyMessage.textContent = "Your cart is empty.";
+    emptyMessage.hidden = false;
+  } else if (lines.length === 0) {
+    emptyMessage.textContent = "Your cart will show here once the products load.";
+    emptyMessage.hidden = false;
+  } else {
+    emptyMessage.hidden = true;
+  }
   clearButton.disabled = cart.length === 0;
   const itemCount = getItemCount(cart);
   headerCount.textContent = String(itemCount);

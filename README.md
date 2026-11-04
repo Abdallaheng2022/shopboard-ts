@@ -11,6 +11,8 @@ A small online shop page built with TypeScript and Vite. Users can browse produc
 - Cart: add items, change quantity, remove items, clear the cart and see the total
 - A quantity of zero removes the product, and out-of-stock products can't be added
 - The cart is saved in localStorage, so it survives a page refresh
+- Loading placeholders, empty states, and error messages with a "Try again" button
+- Clear messages for offline, network, timeout, HTTP and invalid-data errors; products reload when the connection returns
 - Toast notifications for cart actions
 - Sign-up dialog that opens over the page, with native browser validation
 - Mobile-first, responsive layout
@@ -57,20 +59,23 @@ shopboard/
 │   │   │   ├── products.types.ts   # Product type
 │   │   │   ├── products.api.ts     # Fetches products and maps them to Product
 │   │   │   ├── products.logic.ts   # Search, category filter and price sort
-│   │   │   └── products.ui.ts      # Renders the product cards
+│   │   │   └── products.ui.ts      # Renders the cards and the loading, empty and error states
 │   │   ├── cart/
 │   │   │   ├── cart.types.ts       # CartItem and Cart types
-│   │   │   ├── cart.state.ts       # The only file that changes the cart; saves it in localStorage
+│   │   │   ├── cart.state.ts       # The only file that changes the cart; saves it in localStorage safely
 │   │   │   ├── cart.logic.ts       # Item count and total
 │   │   │   └── cart.ui.ts          # Renders the cart drawer, opens and closes it
 │   │   └── register/
 │   │       └── register.ui.ts      # Opens and closes the sign-up dialog
 │   └── shared/
 │       ├── api/
-│       │   └── client.ts           # Shared fetch helper
+│       │   ├── client.ts           # The only fetch: timeout, status and JSON checks
+│       │   └── errors.ts           # ApiError and the user message for each error
 │       └── ui/
+│           ├── connection.ts       # Offline and back-online notices
 │           ├── dom.ts              # Finds an element or throws a clear error
 │           ├── format.ts           # Price formatting
+│           ├── globalErrors.ts     # Catches any error nothing else caught
 │           └── toast.ts            # Toast notifications
 ├── CLAUDE.md                       # Rules for AI coding tools
 ├── DESIGN.md                       # Design reference and tokens

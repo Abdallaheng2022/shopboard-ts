@@ -15,7 +15,9 @@
 - `src/modules/<feature>/`: one folder per feature, split into
   `<feature>.types.ts`, `.api.ts`, `.logic.ts`, `.state.ts` and `.ui.ts` as needed.
 - `src/shared/api/client.ts`: the only file that calls `fetch`
-- `src/shared/ui/`: DOM helpers, price formatting and toasts
+- `src/shared/api/errors.ts`: `ApiError` and the user message for every error
+- `src/shared/ui/`: DOM helpers, price formatting, toasts, the connection
+  watcher and the global error handlers
 - A new feature goes in a new folder in `src/modules/`.
 - Code used by more than one feature goes in `src/shared/`.
 
@@ -47,6 +49,28 @@ Current modules:
   The user can add more than one of a product, up to what the store has.
   When the quantity reaches zero, the product is removed from the cart.
   A product that is out of stock can't be added.
+
+### Errors, loading and empty states
+
+- Every request goes through `getJson` in `shared/api/client.ts`. Never call
+  `fetch` anywhere else.
+- `getJson` throws only `ApiError`, with a kind: `offline`, `network`,
+  `timeout`, `http` or `invalid-response`. Every request has a timeout.
+- Check every response before using it: `response.ok`, valid JSON, and a type
+  guard for the data. Bad data is an `invalid-response` error, not a crash.
+- The user never sees a raw error. Show `getErrorMessage(error)`, and send the
+  technical details to `console.error`.
+- Every screen that loads data has four states: loading, error with a
+  "Try again" button, empty, and loaded. An empty store and a search with no
+  results get different messages.
+- Show an error once: in the page when it has a place there, otherwise as a
+  toast. Never both.
+- Wrap every `localStorage` call in try/catch. If saving fails, the cart still
+  works for this visit and the user is told once.
+- Never leave a promise floating. Use `await` inside try/catch, or `void`
+  only when the function handles its own errors.
+- Every listener is added once, in `main.ts`. A retry reloads the data; it
+  never adds listeners again.
 
 ## Before you finish
 

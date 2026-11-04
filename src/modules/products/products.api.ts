@@ -1,5 +1,6 @@
 // products.api.ts: gets the products from the server and turns them into our Product shape.
 import { getJson } from "../../shared/api/client";
+import { ApiError } from "../../shared/api/errors";
 import type { Product } from "./products.types";
 
 // Where the products live.
@@ -51,11 +52,18 @@ function getItems(data: unknown): unknown[] {
   if (typeof data === "object" && data !== null && "items" in data && Array.isArray(data.items)) {
     return data.items;
   }
-  throw new Error("Products response has no items list");
+  throw new ApiError("invalid-response", "Products response has no items list");
 }
 
-// Downloads the products. Anything that isn't a valid product is skipped.
+// Downloads the products. Invalid products are skipped; if every product is invalid, it throws.
 export async function fetchProducts(): Promise<readonly Product[]> {
-  const data = await getJson(PRODUCTS_URL);
-  return getItems(data).filter(isApiProduct).map(toProduct);
+  const items = getItems(await getJson(PRODUCTS_URL));
+  const valid = items.filter(isApiProduct);
+  if (items.length > 0 && valid.length === 0) {
+    throw new ApiError("invalid-response", "No item in the products response is a valid product");
+  }
+  if (valid.length < items.length) {
+    console.warn(`Skipped ${items.length - valid.length} invalid products from the API`);
+  }
+  return valid.map(toProduct);
 }
