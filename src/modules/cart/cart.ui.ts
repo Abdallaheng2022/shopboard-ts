@@ -1,4 +1,4 @@
-// cart.ui.ts: draws the cart (lines, count, total) and listens to its buttons.
+// cart.ui.ts: draws the cart drawer (lines, count, total), opens and closes it, and listens to its buttons.
 import { getElement } from "../../shared/ui/dom";
 import { formatPrice } from "../../shared/ui/format";
 import { findProductById } from "../products/products.logic";
@@ -11,6 +11,9 @@ const emptyMessage = getElement<HTMLParagraphElement>("#cart-empty");
 const headerCount = getElement<HTMLSpanElement>("#cart-count");
 const totalText = getElement<HTMLSpanElement>("#cart-total");
 const clearButton = getElement<HTMLButtonElement>("#clear-cart");
+const drawer = getElement<HTMLDialogElement>("#cart-drawer");
+const openButton = getElement<HTMLButtonElement>("#open-cart");
+const closeButton = getElement<HTMLButtonElement>("#close-cart");
 
 // Makes one small button that says which action it does and for which product.
 function createActionButton(
@@ -29,7 +32,7 @@ function createActionButton(
   return button;
 }
 
-// Builds one cart line: name, price, - quantity +, and Remove.
+// Builds one cart line: name, category, price, - quantity +, and Remove.
 function createCartLine(item: CartItem, product: Product): HTMLLIElement {
   const line = document.createElement("li");
   line.className = "cart-item";
@@ -38,10 +41,13 @@ function createCartLine(item: CartItem, product: Product): HTMLLIElement {
   const name = document.createElement("p");
   name.className = "cart-item-name";
   name.textContent = product.name;
+  const category = document.createElement("p");
+  category.className = "cart-item-category";
+  category.textContent = product.category;
   const price = document.createElement("p");
   price.className = "cart-item-price";
   price.textContent = `${formatPrice(product.price)} × ${item.quantity} = ${formatPrice(product.price * item.quantity)}`;
-  details.append(name, price);
+  details.append(name, category, price);
 
   const quantity = document.createElement("span");
   quantity.className = "quantity";
@@ -69,7 +75,9 @@ export function renderCart(cart: Cart, products: readonly Product[]): void {
   list.replaceChildren(...lines);
   emptyMessage.hidden = cart.length > 0;
   clearButton.disabled = cart.length === 0;
-  headerCount.textContent = String(getItemCount(cart));
+  const itemCount = getItemCount(cart);
+  headerCount.textContent = String(itemCount);
+  openButton.setAttribute("aria-label", `Open cart, ${itemCount} items`);
   totalText.textContent = formatPrice(getTotal(cart, products));
 }
 
@@ -94,4 +102,20 @@ export function onCartAction(handler: (action: CartAction, productId: number) =>
 // Calls the handler when "Clear cart" is clicked.
 export function onClearCart(handler: () => void): void {
   clearButton.addEventListener("click", handler);
+}
+
+// Opens the cart drawer over the page.
+export function openCart(): void {
+  if (!drawer.open) drawer.showModal();
+}
+
+// Connects the cart icon, the close button and the backdrop to the drawer.
+export function setupCartDrawer(): void {
+  openButton.addEventListener("click", openCart);
+  closeButton.addEventListener("click", () => drawer.close());
+
+  // A click on the dark backdrop lands on the dialog itself, not on its content.
+  drawer.addEventListener("click", (event) => {
+    if (event.target === drawer) drawer.close();
+  });
 }

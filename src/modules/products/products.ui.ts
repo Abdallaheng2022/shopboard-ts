@@ -34,9 +34,14 @@ function createProductCard(product: Product): HTMLElement {
 
   const button = document.createElement("button");
   button.type = "button";
-  button.textContent = "Add to cart";
   button.dataset.productId = String(product.id);
-  button.setAttribute("aria-label", `Add ${product.name} to cart`);
+  if (product.inStock) {
+    button.textContent = "Add to cart";
+    button.setAttribute("aria-label", `Add ${product.name} to cart`);
+  } else {
+    button.textContent = "Out of stock";
+    button.disabled = true;
+  }
 
   card.append(name, category, price, button);
   return card;
