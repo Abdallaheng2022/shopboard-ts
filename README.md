@@ -6,7 +6,10 @@ A small online shop page built with TypeScript and Vite. Users can browse produc
 
 - Products loaded from the ShopBoard API and validated before use
 - Search by name, filter by category and sort by price
+- Cart icon in the header with a badge that shows the number of items
+- Cart drawer that slides in from the right and lists every product with its details
 - Cart: add items, change quantity, remove items, clear the cart and see the total
+- A quantity of zero removes the product, and out-of-stock products can't be added
 - The cart is saved in localStorage, so it survives a page refresh
 - Toast notifications for cart actions
 - Sign-up dialog that opens over the page, with native browser validation
@@ -59,7 +62,7 @@ shopboard/
 │   │   │   ├── cart.types.ts       # CartItem and Cart types
 │   │   │   ├── cart.state.ts       # The only file that changes the cart; saves it in localStorage
 │   │   │   ├── cart.logic.ts       # Item count and total
-│   │   │   └── cart.ui.ts          # Renders the cart and listens to its buttons
+│   │   │   └── cart.ui.ts          # Renders the cart drawer, opens and closes it
 │   │   └── register/
 │   │       └── register.ui.ts      # Opens and closes the sign-up dialog
 │   └── shared/

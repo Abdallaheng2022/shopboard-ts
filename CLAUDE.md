@@ -43,6 +43,10 @@ Current modules:
 - Delete files that are no longer used, and keep the docs in sync.
 - Only `*.ui.ts` files and `shared/ui/` touch the DOM.
   `*.logic.ts` files take the data and return it.
+- The cart shows every product line by line with its details and quantity.
+  The user can add more than one of a product, up to what the store has.
+  When the quantity reaches zero, the product is removed from the cart.
+  A product that is out of stock can't be added.
 
 ## Before you finish
 

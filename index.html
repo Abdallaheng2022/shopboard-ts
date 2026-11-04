@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="ShopBoard: everything your shop needs, in one board." />
     <title>ShopBoard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&amp;display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap"
+    />
   </head>
   <body>
     <header class="site-header">
@@ -12,13 +26,30 @@
       <nav aria-label="Main">
         <ul class="nav-list">
           <li><a href="#products">Shop</a></li>
-          <li><a href="#cart">Cart</a></li>
           <li>
             <button id="open-register" type="button" class="nav-button">Sign up</button>
           </li>
         </ul>
       </nav>
-      <p class="cart">Cart: <span id="cart-count" aria-live="polite">0</span></p>
+      <button id="open-cart" type="button" class="cart-button" aria-label="Open cart, 0 items">
+        <svg
+          class="cart-icon"
+          viewBox="0 0 24 24"
+          width="24"
+          height="24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="9" cy="20" r="1.5" />
+          <circle cx="18" cy="20" r="1.5" />
+          <path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L22 7H6" />
+        </svg>
+        <span id="cart-count" class="cart-badge">0</span>
+      </button>
     </header>
 
     <main>
@@ -53,17 +84,24 @@
         <p id="products-status" class="hint" role="status">Loading products…</p>
         <div id="product-grid" class="grid"></div>
       </section>
+    </main>
 
-      <section id="cart" class="cart-section" aria-labelledby="cart-title">
-        <h2 id="cart-title">Your cart</h2>
+    <dialog id="cart-drawer" class="cart-drawer" aria-labelledby="cart-title">
+      <div class="cart-drawer-content">
+        <div class="cart-drawer-header">
+          <h2 id="cart-title">Your cart</h2>
+          <button id="close-cart" type="button" class="button-secondary" aria-label="Close cart">
+            ×
+          </button>
+        </div>
         <p id="cart-empty" class="hint">Your cart is empty.</p>
         <ul id="cart-list" class="cart-list"></ul>
         <div class="cart-summary">
           <p class="cart-total">Total: <span id="cart-total">$0</span></p>
           <button id="clear-cart" type="button" class="button-secondary">Clear cart</button>
         </div>
-      </section>
-    </main>
+      </div>
+    </dialog>
 
     <dialog id="register-dialog" class="register-dialog" aria-labelledby="register-title">
       <div class="register-dialog-content">

@@ -19,7 +19,13 @@ import {
   increaseItem,
   removeItem,
 } from "./modules/cart/cart.state";
-import { onCartAction, onClearCart, renderCart } from "./modules/cart/cart.ui";
+import {
+  onCartAction,
+  onClearCart,
+  openCart,
+  renderCart,
+  setupCartDrawer,
+} from "./modules/cart/cart.ui";
 import { setupRegisterDialog } from "./modules/register/register.ui";
 import type { Cart, CartAction } from "./modules/cart/cart.types";
 import type { Product } from "./modules/products/products.types";
@@ -55,9 +61,9 @@ async function start(): Promise<void> {
 
   onAddToCart((productId) => {
     const product = findProductById(products, productId);
-    if (product === undefined) return;
+    if (product === undefined || !product.inStock) return;
     renderCart(addItem(productId), products);
-    showToast(`Added ${product.name} to the cart.`);
+    openCart();
   });
 
   onCartAction((action, productId) => {
@@ -70,5 +76,6 @@ async function start(): Promise<void> {
   });
 }
 
+setupCartDrawer();
 setupRegisterDialog();
 start();

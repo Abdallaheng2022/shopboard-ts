@@ -42,6 +42,7 @@ function toProduct(apiProduct: ApiProduct): Product {
     name: apiProduct.title,
     category: apiProduct.category_name,
     price: apiProduct.price_cents / CENTS_PER_DOLLAR,
+    inStock: apiProduct.in_stock,
   };
 }
 

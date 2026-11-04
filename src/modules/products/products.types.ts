@@ -6,6 +6,7 @@ export interface Product {
   readonly name: string;
   readonly category: string;
   readonly price: number;
+  readonly inStock: boolean;
 }
 
 // The three ways the list can be sorted. Must match the <option> values of #sort in index.html.
