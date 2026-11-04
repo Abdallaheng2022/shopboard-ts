@@ -294,14 +294,20 @@ button:disabled {
 }
 
 /* Sign-up dialog */
+/* Sign up opens a dialog, so it's a button, but it looks like the other nav links. */
 .nav-button {
-  padding: 0;
+  padding: 0 12px;
   border: 0;
+  border-radius: var(--rb-r-md);
   background: none;
-  color: inherit;
+  color: var(--rb-link);
   font: inherit;
-  text-decoration: underline;
+  text-decoration: none;
   cursor: pointer;
+}
+
+.nav-button:hover {
+  background-color: var(--rb-surface-2);
 }
 
 .register-dialog {
@@ -576,7 +582,6 @@ body .form > button {
   background-color: var(--rb-accent) !important;
 }
 body a.logo,
-body button.nav-button,
 body #cart-count,
 body #hero-title,
 body .hero > p,
