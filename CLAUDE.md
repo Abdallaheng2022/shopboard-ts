@@ -11,21 +11,77 @@
 
 - `index.html`: the page
 - `src/style.css`: all styles and the design tokens
-- `src/main.ts`: entry point only. It loads the products and connects the modules.
-- `src/modules/<feature>/`: one folder per feature, split into
+- `src/main.ts`: entry point only. It sets up the app-wide handlers
+  (`setupGlobalErrorHandlers`, `setupConnectionWatcher`) and then calls ONE function
+  per module. Nothing else goes here:
+
+  ```ts
+  const products = initProducts();
+  initCart(products);
+  initRegister();
+  ```
+
+- `src/modules/<feature>/`: one folder per feature, self-contained, split into
   `<feature>.types.ts`, `.api.ts`, `.logic.ts`, `.state.ts` and `.ui.ts` as needed.
-- `src/shared/api/client.ts`: the only file that calls `fetch`
+- `src/modules/<feature>/index.ts`: the module's ONLY public entry. It exports one
+  `init<Feature>()` function, plus the types and the small interface other modules
+  are allowed to use. The init function owns the module's state, adds all of its
+  listeners, and starts its requests.
+- `src/shared/api/client.ts`: the only file that calls `fetch`. Holds `API_BASE_URL`
+  and `createApiClient(subpath)`.
 - `src/shared/api/errors.ts`: `ApiError` and the user message for every error
 - `src/shared/ui/`: DOM helpers, price formatting, toasts, the connection
-  watcher and the global error handlers
-- A new feature goes in a new folder in `src/modules/`.
+  watcher (`setupConnectionWatcher`, `onBackOnline`) and the global error handlers
+- A new feature goes in a new folder in `src/modules/`, with its own `index.ts`,
+  and gets one `init<Feature>()` call in `main.ts`.
 - Code used by more than one feature goes in `src/shared/`.
 
-Current modules:
+### Modules and how they relate
 
-- `products`: types, API, search/filter/sort logic, rendering
-- `cart`: types, state with localStorage, count and total, rendering
-- `register`: the sign-up dialog
+| Module     | Entry                | Depends on                   | Exposes                                                                           |
+| ---------- | -------------------- | ---------------------------- | --------------------------------------------------------------------------------- |
+| `products` | `initProducts()`     | nothing                      | `ProductsModule`: `getAll`, `findById`, `onLoaded`, `onAddToCart`; type `Product` |
+| `cart`     | `initCart(products)` | `ProductsModule` (passed in) | nothing                                                                           |
+| `register` | `initRegister()`     | nothing                      | nothing                                                                           |
+
+- `products` loads, filters and draws the products. It retries the load itself when
+  the connection returns (`onBackOnline`). `onAddToCart` only fires for products
+  that exist and are in stock.
+- `cart` keeps the cart in localStorage and draws the drawer. It looks products up
+  with `products.findById`, adds a line on `products.onAddToCart`, and drops saved
+  lines for unknown products on `products.onLoaded`.
+- `register` is the sign-up dialog. It sends no request yet.
+- A module imports another module ONLY through its `index.ts`
+  (`import type { Product } from "../products"`), never from its inner files
+  (`../products/products.logic`). A module that needs another one gets it as an
+  argument of its init function, in `main.ts`.
+
+## API
+
+- `API_BASE_URL` in `src/shared/api/client.ts` is the only place the server URL is
+  written: `https://shopboard-api.vercel.app/api`.
+- Each module makes its own client for its subpath in its `<feature>.api.ts`, and
+  never builds a full URL:
+
+  ```ts
+  const productsApi = createApiClient("/products");
+  await productsApi.get(); // GET  {API_BASE_URL}/products
+  await productsApi.get("/12"); // GET  {API_BASE_URL}/products/12
+  await productsApi.get("", { q: "bag" }); // GET  {API_BASE_URL}/products?q=bag
+  ```
+
+- `ApiClient` has `get(path?, query?)`, `post(path, body)`, `put(path, body)`,
+  `patch(path, body)` and `delete(path)`. Bodies are sent as JSON. Every method
+  returns `Promise<unknown>`: the module checks it with a type guard and maps it to
+  its own types in `<feature>.api.ts`.
+- Every endpoint in use is listed here and in a comment at the top of its
+  `<feature>.api.ts`. Add a row when a module starts using a new one.
+
+| Module     | Subpath     | Method | Endpoint    | Function in `.api.ts` | Response                                                  |
+| ---------- | ----------- | ------ | ----------- | --------------------- | --------------------------------------------------------- |
+| `products` | `/products` | GET    | `/products` | `fetchProducts()`     | `{ items: ApiProduct[], total: number }`, prices in cents |
+| `cart`     | none        |        |             |                       | The cart lives in localStorage only.                      |
+| `register` | none        |        |             |                       | No sign-up endpoint is used yet.                          |
 
 ## Commands
 
@@ -52,9 +108,10 @@ Current modules:
 
 ### Errors, loading and empty states
 
-- Every request goes through `getJson` in `shared/api/client.ts`. Never call
-  `fetch` anywhere else.
-- `getJson` throws only `ApiError`, with a kind: `offline`, `network`,
+- Every request goes through `createApiClient(subpath)` (which uses `request`) in
+  `shared/api/client.ts`. Never call `fetch` anywhere else, and never write the
+  base URL in a module.
+- `request` throws only `ApiError`, with a kind: `offline`, `network`,
   `timeout`, `http` or `invalid-response`. Every request has a timeout.
 - Check every response before using it: `response.ok`, valid JSON, and a type
   guard for the data. Bad data is an `invalid-response` error, not a crash.
@@ -69,8 +126,10 @@ Current modules:
   works for this visit and the user is told once.
 - Never leave a promise floating. Use `await` inside try/catch, or `void`
   only when the function handles its own errors.
-- Every listener is added once, in `main.ts`. A retry reloads the data; it
-  never adds listeners again.
+- Every listener is added once, inside the module's `init<Feature>()` function, and
+  `main.ts` calls each init function exactly once. App-wide listeners
+  (global errors, offline/online toasts) are set up once in `main.ts`. A retry
+  reloads the data; it never adds listeners again.
 
 ## Before you finish
 

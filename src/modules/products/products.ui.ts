@@ -129,7 +129,8 @@ export function onFiltersChange(handler: () => void): void {
 
 // Calls the handler with the product id when an "Add to cart" button is clicked.
 // One listener on the grid for all buttons, so redrawing the cards never adds extra listeners.
-export function onAddToCart(handler: (productId: number) => void): void {
+// index.ts checks the product before telling other modules.
+export function onAddToCartClick(handler: (productId: number) => void): void {
   grid.addEventListener("click", (event) => {
     if (!(event.target instanceof Element)) return;
     const button = event.target.closest<HTMLButtonElement>("button[data-product-id]");

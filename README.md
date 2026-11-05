@@ -52,27 +52,30 @@ npm run dev
 shopboard/
 ├── index.html                      # Page markup
 ├── src/
-│   ├── main.ts                     # Entry point: wires the modules together
+│   ├── main.ts                     # Entry point: one init call per module
 │   ├── style.css                   # Styles and design tokens
 │   ├── modules/
 │   │   ├── products/
+│   │   │   ├── index.ts            # Public entry: initProducts() and the ProductsModule API
 │   │   │   ├── products.types.ts   # Product type
-│   │   │   ├── products.api.ts     # Fetches products and maps them to Product
+│   │   │   ├── products.api.ts     # GET /products through createApiClient, maps to Product
 │   │   │   ├── products.logic.ts   # Search, category filter and price sort
 │   │   │   └── products.ui.ts      # Renders the cards and the loading, empty and error states
 │   │   ├── cart/
+│   │   │   ├── index.ts            # Public entry: initCart(products)
 │   │   │   ├── cart.types.ts       # CartItem and Cart types
 │   │   │   ├── cart.state.ts       # The only file that changes the cart; saves it in localStorage safely
 │   │   │   ├── cart.logic.ts       # Item count and total
 │   │   │   └── cart.ui.ts          # Renders the cart drawer, opens and closes it
 │   │   └── register/
+│   │       ├── index.ts            # Public entry: initRegister()
 │   │       └── register.ui.ts      # Opens and closes the sign-up dialog
 │   └── shared/
 │       ├── api/
-│       │   ├── client.ts           # The only fetch: timeout, status and JSON checks
+│       │   ├── client.ts           # The only fetch: API_BASE_URL, createApiClient(subpath), timeout and checks
 │       │   └── errors.ts           # ApiError and the user message for each error
 │       └── ui/
-│           ├── connection.ts       # Offline and back-online notices
+│           ├── connection.ts       # Offline/online notices and onBackOnline()
 │           ├── dom.ts              # Finds an element or throws a clear error
 │           ├── format.ts           # Price formatting
 │           ├── globalErrors.ts     # Catches any error nothing else caught
@@ -86,7 +89,9 @@ shopboard/
 
 ### Where new code goes
 
-- A new feature gets its own folder in `src/modules/<feature>/`, split into `types`, `api`, `logic`, `state` and `ui` files as needed.
+- A new feature gets its own folder in `src/modules/<feature>/`, split into `types`, `api`, `logic`, `state` and `ui` files as needed, with an `index.ts` that exports one `init<Feature>()` function. `main.ts` calls it once.
+- Modules only import each other through `index.ts`. A module that needs another one receives it as an argument of its init function.
+- API requests use `createApiClient("/<subpath>")` from `src/shared/api/client.ts`, so the base URL lives in one place. The endpoints in use are listed in [CLAUDE.md](CLAUDE.md#api).
 - Code used by more than one feature goes in `src/shared/`.
 - `logic` and `state` files never touch the DOM. Only `ui` files do.
 

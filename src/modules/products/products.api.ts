@@ -1,10 +1,12 @@
 // products.api.ts: gets the products from the server and turns them into our Product shape.
-import { getJson } from "../../shared/api/client";
+// Endpoints used by this module (relative to API_BASE_URL in shared/api/client.ts):
+//   GET /products → { items: ApiProduct[], total: number }
+import { createApiClient } from "../../shared/api/client";
 import { ApiError } from "../../shared/api/errors";
 import type { Product } from "./products.types";
 
-// Where the products live.
-const PRODUCTS_URL = "https://shopboard-api.vercel.app/api/products";
+// The products module's part of the API. Every request below is under /products.
+const productsApi = createApiClient("/products");
 
 // The API sends prices in cents. 8900 cents = $89.
 const CENTS_PER_DOLLAR = 100;
@@ -57,7 +59,7 @@ function getItems(data: unknown): unknown[] {
 
 // Downloads the products. Invalid products are skipped; if every product is invalid, it throws.
 export async function fetchProducts(): Promise<readonly Product[]> {
-  const items = getItems(await getJson(PRODUCTS_URL));
+  const items = getItems(await productsApi.get());
   const valid = items.filter(isApiProduct);
   if (items.length > 0 && valid.length === 0) {
     throw new ApiError("invalid-response", "No item in the products response is a valid product");

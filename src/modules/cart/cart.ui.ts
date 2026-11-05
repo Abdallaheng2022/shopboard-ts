@@ -1,10 +1,9 @@
 // cart.ui.ts: draws the cart drawer (lines, count, total), opens and closes it, and listens to its buttons.
 import { getElement } from "../../shared/ui/dom";
 import { formatPrice } from "../../shared/ui/format";
-import { findProductById } from "../products/products.logic";
-import type { Product } from "../products/products.types";
+import type { Product } from "../products";
 import { getItemCount, getTotal } from "./cart.logic";
-import type { Cart, CartAction, CartItem } from "./cart.types";
+import type { Cart, CartAction, CartItem, FindProduct } from "./cart.types";
 
 const list = getElement<HTMLUListElement>("#cart-list");
 const emptyMessage = getElement<HTMLParagraphElement>("#cart-empty");
@@ -68,9 +67,9 @@ function createCartLine(item: CartItem, product: Product): HTMLLIElement {
 
 // Redraws the whole cart: every line, the count in the header, and the total.
 // Before the products load, saved lines can't be drawn yet, so a message says so.
-export function renderCart(cart: Cart, products: readonly Product[]): void {
+export function renderCart(cart: Cart, findProduct: FindProduct): void {
   const lines = cart.flatMap((item) => {
-    const product = findProductById(products, item.productId);
+    const product = findProduct(item.productId);
     return product === undefined ? [] : [createCartLine(item, product)];
   });
   list.replaceChildren(...lines);
@@ -87,7 +86,7 @@ export function renderCart(cart: Cart, products: readonly Product[]): void {
   const itemCount = getItemCount(cart);
   headerCount.textContent = String(itemCount);
   openButton.setAttribute("aria-label", `Open cart, ${itemCount} items`);
-  totalText.textContent = formatPrice(getTotal(cart, products));
+  totalText.textContent = formatPrice(getTotal(cart, findProduct));
 }
 
 // Checks that a data-action value is one of the cart actions.
