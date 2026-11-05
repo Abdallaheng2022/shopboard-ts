@@ -51,7 +51,7 @@ export function renderProductsLoading(): void {
   showStatus("Loading products…");
 }
 
-// Builds one product card, the same markup the old hard-coded HTML had.
+// Builds one product card: name, category, price and an "Add to cart" button.
 function createProductCard(product: Product): HTMLElement {
   const card = document.createElement("article");
   card.className = "card";
@@ -69,6 +69,7 @@ function createProductCard(product: Product): HTMLElement {
 
   const button = document.createElement("button");
   button.type = "button";
+  button.className = "button";
   button.dataset.productId = String(product.id);
   if (product.inStock) {
     button.textContent = "Add to cart";

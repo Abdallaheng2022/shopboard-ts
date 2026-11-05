@@ -5,19 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="ShopBoard: everything your shop needs, in one board." />
     <title>ShopBoard</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&amp;display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700&amp;family=Inter:wght@400;600;700&amp;display=swap"
     />
   </head>
   <body>
@@ -25,9 +18,9 @@
       <a class="logo" href="/">ShopBoard</a>
       <nav aria-label="Main">
         <ul class="nav-list">
-          <li><a href="#products">Shop</a></li>
+          <li><a class="nav-link" href="#products">Shop</a></li>
           <li>
-            <button id="open-register" type="button" class="nav-button">Sign up</button>
+            <button id="open-register" type="button" class="nav-link">Sign up</button>
           </li>
         </ul>
       </nav>
@@ -60,43 +53,54 @@
       </section>
 
       <section id="products" class="products" aria-labelledby="products-title">
-        <h2 id="products-title">Products</h2>
+        <h2 id="products-title" class="section-title">Products</h2>
         <div class="controls">
           <div class="field">
             <label for="search">Search</label>
-            <input id="search" name="search" type="search" placeholder="Product name" />
+            <input
+              id="search"
+              class="input"
+              name="search"
+              type="search"
+              placeholder="Product name"
+            />
           </div>
           <div class="field">
             <label for="category">Category</label>
-            <select id="category" name="category">
+            <select id="category" class="input" name="category">
               <option value="all">All categories</option>
             </select>
           </div>
           <div class="field">
             <label for="sort">Sort by price</label>
-            <select id="sort" name="sort">
+            <select id="sort" class="input" name="sort">
               <option value="default">Default</option>
               <option value="price-asc">Low to high</option>
               <option value="price-desc">High to low</option>
             </select>
           </div>
         </div>
-        <div id="products-status" class="products-status" role="status">
+        <div id="products-status" class="status-box" role="status">
           <p class="hint">Loading products…</p>
         </div>
         <div id="product-grid" class="grid"></div>
       </section>
     </main>
 
-    <dialog id="cart-drawer" class="cart-drawer" aria-labelledby="cart-title">
+    <dialog id="cart-drawer" class="dialog cart-drawer" aria-labelledby="cart-title">
       <div class="cart-drawer-content">
-        <div class="cart-drawer-header">
+        <div class="dialog-header">
           <h2 id="cart-title">Your cart</h2>
-          <button id="close-cart" type="button" class="button-secondary" aria-label="Close cart">
+          <button
+            id="close-cart"
+            type="button"
+            class="button-secondary button-icon"
+            aria-label="Close cart"
+          >
             ×
           </button>
         </div>
-        <p id="cart-empty" class="hint">Your cart is empty.</p>
+        <p id="cart-empty" class="status-box">Your cart is empty.</p>
         <ul id="cart-list" class="cart-list"></ul>
         <div class="cart-summary">
           <p class="cart-total">Total: <span id="cart-total">$0</span></p>
@@ -105,27 +109,40 @@
       </div>
     </dialog>
 
-    <dialog id="register-dialog" class="register-dialog" aria-labelledby="register-title">
+    <dialog id="register-dialog" class="dialog register-dialog" aria-labelledby="register-title">
       <div class="register-dialog-content">
-        <div class="register-dialog-header">
+        <div class="dialog-header">
           <h2 id="register-title">Create your account</h2>
-          <button id="close-register" type="button" class="button-secondary" aria-label="Close">
+          <button
+            id="close-register"
+            type="button"
+            class="button-secondary button-icon"
+            aria-label="Close"
+          >
             ×
           </button>
         </div>
         <form id="register-form" class="form" method="dialog">
           <div class="field">
             <label for="name">Full name</label>
-            <input id="name" name="name" type="text" autocomplete="name" required />
+            <input id="name" class="input" name="name" type="text" autocomplete="name" required />
           </div>
           <div class="field">
             <label for="email">Email</label>
-            <input id="email" name="email" type="email" autocomplete="email" required />
+            <input
+              id="email"
+              class="input"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+            />
           </div>
           <div class="field">
             <label for="password">Password</label>
             <input
               id="password"
+              class="input"
               name="password"
               type="password"
               autocomplete="new-password"
@@ -139,7 +156,7 @@
             <input id="terms" name="terms" type="checkbox" required />
             <label for="terms">I agree to the terms</label>
           </div>
-          <button type="submit">Create account</button>
+          <button type="submit" class="button">Create account</button>
         </form>
       </div>
     </dialog>
