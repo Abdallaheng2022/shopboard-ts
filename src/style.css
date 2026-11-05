@@ -11,7 +11,7 @@
   --color-surface-2: #e2e6ee;
   --color-fg: #0e1116;
   --color-fg-2: #36393e;
-  --color-muted: #63666a;
+  --color-muted: #5a5d61;
   --color-border: #cfd1d4;
   --color-accent: #3b5bfd;
   --color-on-accent: #ffffff;
@@ -69,7 +69,7 @@
     --color-fg-2: #c8c9d0;
     --color-muted: #9a9ca7;
     --color-border: #31323a;
-    --color-accent: #4d6afd;
+    --color-accent: #5b76fd;
     --color-on-accent: #0b0b0d;
     --color-accent-soft: #1b2243;
     --color-link: #7d93ff;
@@ -254,7 +254,7 @@ button:disabled {
 select.input {
   appearance: none;
   padding-right: 38px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2363666a' stroke-width='2'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235a5d61' stroke-width='2'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 14px center;
 }
