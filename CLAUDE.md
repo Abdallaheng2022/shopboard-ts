@@ -10,7 +10,9 @@
 ## Structure
 
 - `index.html`: the page
-- `src/style.css`: all styles and the design tokens
+- `src/style.css`: the design tokens first, then the styles for each component.
+  DESIGN.md explains every token.
+- `public/`: static files served as they are (the favicon)
 - `src/main.ts`: entry point only. It sets up the app-wide handlers
   (`setupGlobalErrorHandlers`, `setupConnectionWatcher`) and then calls ONE function
   per module. Nothing else goes here:
@@ -93,18 +95,33 @@
 
 ## Rules
 
-- Never use `as`, like in cart.state.ts, products.api.ts, cart.ui.ts
-  and products.ui.ts. A type guard makes TypeScript check the types,
-  so errors are not skipped. Use a type guard with `is` instead.
-- Delete `npm test` from `.husky/pre-commit` and keep only
-  `npx lint-staged`, so the commit can go through.
-- Delete files that are no longer used, and keep the docs in sync.
+### Mistakes I saw the AI make (do not repeat them)
+
+1. **Hiding casts.** It wrote `as Product`, and later `querySelector<HTMLDialogElement>()`,
+   which is the same unchecked cast in another form. Use a type guard with `is`, or
+   `instanceof` (`getElement("#cart-drawer", HTMLDialogElement)`). No `as`, no `!`, no `any`.
+2. **Adding steps that don't exist.** It put `npm test` in `.husky/pre-commit` when the
+   project has no tests, so every commit failed. The hook runs only `npx lint-staged`.
+   Never add a script, file or dependency the project doesn't use.
+3. **Pasting styles on top instead of fixing them.** It added a generated theme layer with
+   about 150 `!important` rules, ID selectors and a second set of color variables. It
+   also caused a big empty gap under the products. In `style.css`: use the existing
+   tokens, style with classes, no `!important` (except the reduced-motion rule), no new
+   raw colors or sizes.
+4. **Docs that don't match the code.** It described features that don't exist (a stock
+   limit in the cart) and left wrong paths in the README. Change the docs in the same
+   commit as the code, and only write what the code really does.
+5. **Writing in other languages and about tools.** It left Arabic text and tool output in
+   `DESIGN.md`. Everything in the repo is English and about this project.
+
+### Code rules
+
 - Only `*.ui.ts` files and `shared/ui/` touch the DOM.
-  `*.logic.ts` files take the data and return it.
+  `*.logic.ts` files take data and return data.
+- Delete files that are no longer used.
 - The cart shows every product line by line with its details and quantity.
-  The user can add more than one of a product, up to what the store has.
-  When the quantity reaches zero, the product is removed from the cart.
-  A product that is out of stock can't be added.
+  The user can add more than one of a product. When the quantity reaches zero, the
+  line is removed. A product that is out of stock can't be added or increased.
 
 ### Errors, loading and empty states
 

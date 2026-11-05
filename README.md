@@ -15,7 +15,7 @@ A small online shop page built with TypeScript and Vite. Users can browse produc
 - Clear messages for offline, network, timeout, HTTP and invalid-data errors; products reload when the connection returns
 - Toast notifications for cart actions
 - Sign-up dialog that opens over the page, with native browser validation
-- Mobile-first, responsive layout
+- Mobile-first, responsive layout, with a dark theme that follows the system setting
 
 ## Tech stack
 
@@ -30,7 +30,7 @@ Requirements: Node.js (LTS) and Git.
 
 ```bash
 git clone https://github.com/Abdallaheng2022/shopboard-ts.git
-cd shopboard
+cd shopboard-ts
 npm install
 npm run dev
 ```
@@ -49,11 +49,12 @@ npm run dev
 ## Project structure
 
 ```
-shopboard/
+shopboard-ts/
 ├── index.html                      # Page markup
+├── public/favicon.svg              # Site icon
 ├── src/
 │   ├── main.ts                     # Entry point: one init call per module
-│   ├── style.css                   # Styles and design tokens
+│   ├── style.css                   # Design tokens, then styles per component
 │   ├── modules/
 │   │   ├── products/
 │   │   │   ├── index.ts            # Public entry: initProducts() and the ProductsModule API
@@ -81,7 +82,7 @@ shopboard/
 │           ├── globalErrors.ts     # Catches any error nothing else caught
 │           └── toast.ts            # Toast notifications
 ├── CLAUDE.md                       # Rules for AI coding tools
-├── DESIGN.md                       # Design reference and tokens
+├── DESIGN.md                       # Design reference, tokens and decisions
 ├── eslint.config.js                # ESLint rules
 ├── .prettierrc                     # Prettier settings
 └── .husky/pre-commit               # Runs lint-staged before every commit
@@ -102,4 +103,4 @@ shopboard/
 
 ## Design
 
-The visual design, its reference and the design tokens are documented in [DESIGN.md](DESIGN.md).
+The design starts from the Bento grid style: rounded tiles, a bold heading font and one blue accent. The reference, the tokens, what I changed and the contrast checks are in [DESIGN.md](DESIGN.md).
