@@ -4,11 +4,11 @@ import { formatPrice } from "../../shared/ui/format";
 import { ALL_CATEGORIES, isSortOrder } from "./products.logic";
 import type { Filters, Product } from "./products.types";
 
-const grid = getElement<HTMLDivElement>("#product-grid");
-const status = getElement<HTMLDivElement>("#products-status");
-const searchInput = getElement<HTMLInputElement>("#search");
-const categorySelect = getElement<HTMLSelectElement>("#category");
-const sortSelect = getElement<HTMLSelectElement>("#sort");
+const grid = getElement("#product-grid", HTMLDivElement);
+const status = getElement("#products-status", HTMLDivElement);
+const searchInput = getElement("#search", HTMLInputElement);
+const categorySelect = getElement("#category", HTMLSelectElement);
+const sortSelect = getElement("#sort", HTMLSelectElement);
 
 // How many placeholder cards show while the products load.
 const SKELETON_COUNT = 6;
@@ -134,8 +134,8 @@ export function onFiltersChange(handler: () => void): void {
 export function onAddToCartClick(handler: (productId: number) => void): void {
   grid.addEventListener("click", (event) => {
     if (!(event.target instanceof Element)) return;
-    const button = event.target.closest<HTMLButtonElement>("button[data-product-id]");
-    if (button === null) return;
+    const button = event.target.closest("button[data-product-id]");
+    if (!(button instanceof HTMLButtonElement)) return;
     handler(Number(button.dataset.productId));
   });
 }

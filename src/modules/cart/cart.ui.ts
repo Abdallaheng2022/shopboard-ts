@@ -5,14 +5,14 @@ import type { Product } from "../products";
 import { getItemCount, getTotal } from "./cart.logic";
 import type { Cart, CartAction, CartItem, FindProduct } from "./cart.types";
 
-const list = getElement<HTMLUListElement>("#cart-list");
-const emptyMessage = getElement<HTMLParagraphElement>("#cart-empty");
-const headerCount = getElement<HTMLSpanElement>("#cart-count");
-const totalText = getElement<HTMLSpanElement>("#cart-total");
-const clearButton = getElement<HTMLButtonElement>("#clear-cart");
-const drawer = getElement<HTMLDialogElement>("#cart-drawer");
-const openButton = getElement<HTMLButtonElement>("#open-cart");
-const closeButton = getElement<HTMLButtonElement>("#close-cart");
+const list = getElement("#cart-list", HTMLUListElement);
+const emptyMessage = getElement("#cart-empty", HTMLParagraphElement);
+const headerCount = getElement("#cart-count", HTMLSpanElement);
+const totalText = getElement("#cart-total", HTMLSpanElement);
+const clearButton = getElement("#clear-cart", HTMLButtonElement);
+const drawer = getElement("#cart-drawer", HTMLDialogElement);
+const openButton = getElement("#open-cart", HTMLButtonElement);
+const closeButton = getElement("#close-cart", HTMLButtonElement);
 
 // Makes one small button that says which action it does and for which product.
 function createActionButton(
@@ -99,8 +99,8 @@ function isCartAction(value: string | undefined): value is CartAction {
 export function onCartAction(handler: (action: CartAction, productId: number) => void): void {
   list.addEventListener("click", (event) => {
     if (!(event.target instanceof Element)) return;
-    const button = event.target.closest<HTMLButtonElement>("button[data-action]");
-    if (button === null) return;
+    const button = event.target.closest("button[data-action]");
+    if (!(button instanceof HTMLButtonElement)) return;
     const action = button.dataset.action;
     if (!isCartAction(action)) return;
     handler(action, Number(button.dataset.productId));

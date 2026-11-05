@@ -10,7 +10,7 @@ const TOAST_DURATION_MS: Record<ToastKind, number> = {
   error: 5000,
 };
 
-const region = getElement<HTMLDivElement>("#toast-region");
+const region = getElement("#toast-region", HTMLDivElement);
 
 // Shows a message for a short time, then removes it.
 export function showToast(message: string, kind: ToastKind = "success"): void {
