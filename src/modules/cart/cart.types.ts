@@ -1,4 +1,8 @@
 // cart.types.ts: what the cart looks like.
+import type { Product } from "../products";
+
+// How the cart looks up a product. index.ts passes the products module's findById.
+export type FindProduct = (productId: number) => Product | undefined;
 
 // One line in the cart: which product, and how many of it.
 export interface CartItem {

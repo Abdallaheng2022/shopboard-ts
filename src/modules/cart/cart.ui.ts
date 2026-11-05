@@ -1,19 +1,18 @@
 // cart.ui.ts: draws the cart drawer (lines, count, total), opens and closes it, and listens to its buttons.
 import { getElement } from "../../shared/ui/dom";
 import { formatPrice } from "../../shared/ui/format";
-import { findProductById } from "../products/products.logic";
-import type { Product } from "../products/products.types";
+import type { Product } from "../products";
 import { getItemCount, getTotal } from "./cart.logic";
-import type { Cart, CartAction, CartItem } from "./cart.types";
+import type { Cart, CartAction, CartItem, FindProduct } from "./cart.types";
 
-const list = getElement<HTMLUListElement>("#cart-list");
-const emptyMessage = getElement<HTMLParagraphElement>("#cart-empty");
-const headerCount = getElement<HTMLSpanElement>("#cart-count");
-const totalText = getElement<HTMLSpanElement>("#cart-total");
-const clearButton = getElement<HTMLButtonElement>("#clear-cart");
-const drawer = getElement<HTMLDialogElement>("#cart-drawer");
-const openButton = getElement<HTMLButtonElement>("#open-cart");
-const closeButton = getElement<HTMLButtonElement>("#close-cart");
+const list = getElement("#cart-list", HTMLUListElement);
+const emptyMessage = getElement("#cart-empty", HTMLParagraphElement);
+const headerCount = getElement("#cart-count", HTMLSpanElement);
+const totalText = getElement("#cart-total", HTMLSpanElement);
+const clearButton = getElement("#clear-cart", HTMLButtonElement);
+const drawer = getElement("#cart-drawer", HTMLDialogElement);
+const openButton = getElement("#open-cart", HTMLButtonElement);
+const closeButton = getElement("#close-cart", HTMLButtonElement);
 
 // Makes one small button that says which action it does and for which product.
 function createActionButton(
@@ -67,18 +66,27 @@ function createCartLine(item: CartItem, product: Product): HTMLLIElement {
 }
 
 // Redraws the whole cart: every line, the count in the header, and the total.
-export function renderCart(cart: Cart, products: readonly Product[]): void {
+// Before the products load, saved lines can't be drawn yet, so a message says so.
+export function renderCart(cart: Cart, findProduct: FindProduct): void {
   const lines = cart.flatMap((item) => {
-    const product = findProductById(products, item.productId);
+    const product = findProduct(item.productId);
     return product === undefined ? [] : [createCartLine(item, product)];
   });
   list.replaceChildren(...lines);
-  emptyMessage.hidden = cart.length > 0;
+  if (cart.length === 0) {
+    emptyMessage.textContent = "Your cart is empty.";
+    emptyMessage.hidden = false;
+  } else if (lines.length === 0) {
+    emptyMessage.textContent = "Your cart will show here once the products load.";
+    emptyMessage.hidden = false;
+  } else {
+    emptyMessage.hidden = true;
+  }
   clearButton.disabled = cart.length === 0;
   const itemCount = getItemCount(cart);
   headerCount.textContent = String(itemCount);
   openButton.setAttribute("aria-label", `Open cart, ${itemCount} items`);
-  totalText.textContent = formatPrice(getTotal(cart, products));
+  totalText.textContent = formatPrice(getTotal(cart, findProduct));
 }
 
 // Checks that a data-action value is one of the cart actions.
@@ -91,8 +99,8 @@ function isCartAction(value: string | undefined): value is CartAction {
 export function onCartAction(handler: (action: CartAction, productId: number) => void): void {
   list.addEventListener("click", (event) => {
     if (!(event.target instanceof Element)) return;
-    const button = event.target.closest<HTMLButtonElement>("button[data-action]");
-    if (button === null) return;
+    const button = event.target.closest("button[data-action]");
+    if (!(button instanceof HTMLButtonElement)) return;
     const action = button.dataset.action;
     if (!isCartAction(action)) return;
     handler(action, Number(button.dataset.productId));

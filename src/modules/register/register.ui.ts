@@ -2,10 +2,10 @@
 import { getElement } from "../../shared/ui/dom";
 import { showToast } from "../../shared/ui/toast";
 
-const dialog = getElement<HTMLDialogElement>("#register-dialog");
-const openButton = getElement<HTMLButtonElement>("#open-register");
-const closeButton = getElement<HTMLButtonElement>("#close-register");
-const form = getElement<HTMLFormElement>("#register-form");
+const dialog = getElement("#register-dialog", HTMLDialogElement);
+const openButton = getElement("#open-register", HTMLButtonElement);
+const closeButton = getElement("#close-register", HTMLButtonElement);
+const form = getElement("#register-form", HTMLFormElement);
 
 // Connects the buttons, the backdrop and the form to the dialog.
 export function setupRegisterDialog(): void {
